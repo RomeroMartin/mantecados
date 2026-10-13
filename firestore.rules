@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── PEDIDOS ────────────────────────────────────────────────
+    // Se crean con sesión iniciada y después son inmutables.
+    // La única modificación posible es marcar 'anulado'.
+    // Nadie puede borrar un pedido desde la app: si se pudiera,
+    // la caja no serviría como registro.
+    match /pedidos/{id} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+        && request.resource.data.numero is int
+        && request.resource.data.total is number
+        && request.resource.data.total >= 0
+        && request.resource.data.pago in ['efectivo', 'transferencia']
+        && request.resource.data.anulado == false;
+
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['anulado'])
+        && request.resource.data.anulado == true;
+
+      allow delete: if false;
+    }
+
+    // ── CONTADORES ─────────────────────────────────────────────
+    // Un documento por día: contadores/2026-09-08 → { valor: 37 }
+    // Solo puede subir de a uno, nunca retroceder.
+    match /contadores/{dia} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+        && request.resource.data.valor == 1;
+
+      allow update: if request.auth != null
+        && request.resource.data.valor == resource.data.valor + 1;
+
+      allow delete: if false;
+    }
+
+    // Todo lo demás, cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

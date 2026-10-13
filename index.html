@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#191713">
+<title>Mantecados · Pedidos</title>
+<link rel="icon" href="mascota.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   TOKENS — paleta tomada del IG de Mantecados
+   ═══════════════════════════════════════════════════ */
+:root{
+  --carbon:   #191713;  /* carbón del feed */
+  --panel:    #242019;
+  --panel-2:  #2F2A22;
+  --line:     #3B342A;
+  --drip:     #E9C531;  /* amarillo chorreado del logo */
+  --drip-ink: #241D00;
+  --pickle:   #93A94B;  /* verde de la mascota */
+  --grape:    #7E52B0;  /* violeta del packaging */
+  --cream:    #F2DFC2;
+  --dim:      #A2957F;
+  --red:      #C63A24;
+  --radius:   10px;
+  --bar-h:    74px;
+  --ui:   'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --disp: 'Anton', 'Archivo', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--ui);background:var(--carbon);color:var(--cream);
+  font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior-y:none;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--drip);outline-offset:2px;border-radius:4px}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none !important}
+
+/* ═══ LOGIN ═══ */
+#login{min-height:100dvh;display:grid;place-items:center;padding:24px}
+.login-box{width:100%;max-width:340px;text-align:center}
+.login-box .mascota{width:92px;height:92px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--line);background:#F2D9B8;margin-bottom:18px}
+.login-box h1{font-family:var(--disp);font-size:38px;letter-spacing:.01em;color:var(--drip);line-height:1}
+.login-box p{font-size:13px;color:var(--dim);margin:6px 0 26px}
+.login-box input{width:100%;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:13px 14px;font-size:16px;margin-bottom:8px;text-align:left}
+.login-box button{width:100%;padding:15px;border-radius:var(--radius);
+  background:var(--drip);color:var(--drip-ink);font-weight:800;font-size:16px;margin-top:6px}
+.login-box button:disabled{background:var(--panel-2);color:var(--dim)}
+.err{font-size:13.5px;color:var(--red);margin-top:12px;min-height:19px;line-height:1.35}
+
+/* ═══ HEADER ═══ */
+header{position:sticky;top:0;z-index:30;background:var(--carbon);
+  border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 0 0}
+.head-row{display:flex;align-items:center;gap:11px;padding:11px 16px 9px}
+.avatar{width:40px;height:40px;flex:none;border-radius:50%;object-fit:cover;
+  background:#F2D9B8;border:1px solid var(--line)}
+.head-txt{flex:1;min-width:0}
+.head-txt h1{font-family:var(--disp);font-size:22px;line-height:1;letter-spacing:.01em;color:var(--drip)}
+.head-txt p{font-size:12px;color:var(--dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ticket-no{flex:none;text-align:right;line-height:.82}
+.ticket-no span{display:block;font-size:10px;color:var(--dim);letter-spacing:.08em;margin-bottom:4px}
+.ticket-no strong{font-family:var(--disp);font-size:36px;color:var(--drip);letter-spacing:0}
+nav{display:flex;gap:4px;padding:0 12px}
+nav button{flex:1;padding:11px 8px;font-size:14px;font-weight:600;color:var(--dim);
+  border-bottom:2px solid transparent}
+nav button[aria-selected="true"]{color:var(--cream);border-bottom-color:var(--drip)}
+
+/* ═══ LAYOUT ═══ */
+main{padding:0 16px calc(var(--bar-h) + 28px);max-width:1180px;margin:0 auto}
+.aviso{margin:14px 0 0;padding:10px 12px;border-radius:var(--radius);font-size:13px;line-height:1.45;
+  background:rgba(198,58,36,.14);border:1px solid rgba(198,58,36,.45)}
+
+#menu > .cat-title:first-child{margin-top:18px}
+.cat-title{font-family:var(--disp);font-size:15px;color:var(--dim);letter-spacing:.03em;margin:26px 0 10px}
+.items{display:grid;gap:9px}
+@media(min-width:760px){.items{grid-template-columns:1fr 1fr}}
+.item{display:flex;align-items:center;gap:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.item-txt{flex:1;min-width:0}
+.item-txt b{display:block;font-size:16.5px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.item-txt small{display:block;font-size:13px;color:var(--dim);margin-top:4px;line-height:1.35}
+.item-price{display:block;margin-top:8px;font-size:15.5px;font-weight:700}
+.item-add{flex:none;width:46px;height:46px;border-radius:10px;background:var(--drip);
+  color:var(--drip-ink);font-size:26px;font-weight:800;line-height:1;display:grid;place-items:center}
+.item-add:active{transform:scale(.94)}
+.item[data-in="1"]{border-color:var(--drip)}
+.step-lg{flex:none;display:flex;align-items:center;background:var(--panel-2);
+  border:1px solid var(--drip);border-radius:10px}
+.step-lg button{width:42px;height:46px;font-size:22px;font-weight:800;
+  display:grid;place-items:center;color:var(--drip)}
+.step-lg span{min-width:26px;text-align:center;font-size:17px;font-weight:800}
+
+/* ═══ TICKET ═══ */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  height:calc(var(--bar-h) + env(safe-area-inset-bottom));
+  padding:0 16px env(safe-area-inset-bottom);
+  background:var(--panel);border-top:1px solid var(--line);display:flex;align-items:center;gap:14px}
+.bar-info{flex:1;min-width:0}
+.bar-info span{display:block;font-size:12.5px;color:var(--dim)}
+.bar-info strong{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.bar-cta{flex:none;background:var(--drip);color:var(--drip-ink);padding:13px 22px;
+  border-radius:var(--radius);font-weight:800;font-size:15px}
+.bar[data-empty="1"] .bar-cta{background:var(--panel-2);color:var(--dim)}
+.scrim{position:fixed;inset:0;z-index:45;background:rgba(8,6,4,.65);opacity:0;
+  pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.ticket{position:fixed;left:0;right:0;bottom:0;z-index:50;max-height:90dvh;
+  display:flex;flex-direction:column;background:var(--panel);border-radius:16px 16px 0 0;
+  transform:translateY(102%);transition:transform .24s cubic-bezier(.32,.72,0,1)}
+.ticket.on{transform:translateY(0)}
+.ticket::before{content:'';position:absolute;top:-8px;left:0;right:0;height:9px;
+  background:radial-gradient(circle at 5px 0, transparent 5px, var(--panel) 5.5px) 0 0/12px 9px repeat-x}
+.ticket-head{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 16px 12px;border-bottom:1px dashed var(--line);flex:none}
+.ticket-head h2{font-family:var(--disp);font-size:17px;letter-spacing:.02em}
+.ticket-head button{font-size:13.5px;color:var(--dim);font-weight:600}
+.ticket-body{overflow-y:auto;padding:6px 16px 14px;flex:1;-webkit-overflow-scrolling:touch}
+.line{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.line-txt{flex:1;min-width:0}
+.line-txt b{display:block;font-size:14.5px;font-weight:600}
+.line-txt small{display:block;font-size:12.5px;color:var(--dim)}
+.line-total{font-size:14.5px;font-weight:700;min-width:76px;text-align:right}
+.step{display:flex;align-items:center;gap:2px;background:var(--panel-2);border-radius:8px;flex:none}
+.step button{width:32px;height:32px;font-size:17px;font-weight:800;display:grid;place-items:center;border-radius:8px}
+.step span{min-width:22px;text-align:center;font-size:14.5px;font-weight:700}
+.empty{padding:34px 8px;text-align:center;color:var(--dim);font-size:14px;line-height:1.5}
+.field{margin-top:14px}
+.field label{display:block;font-size:12.5px;color:var(--dim);margin-bottom:6px;font-weight:600}
+.field input,.field textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:var(--radius);padding:11px 12px;font-size:15px}
+.field textarea{resize:vertical;min-height:56px;font-family:var(--ui)}
+.pay{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.pay button{padding:13px 10px;border-radius:var(--radius);font-size:14.5px;font-weight:700;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--dim)}
+.pay button[aria-pressed="true"][data-pay="efectivo"]{background:var(--drip);border-color:var(--drip);color:var(--drip-ink)}
+.pay button[aria-pressed="true"][data-pay="transferencia"]{background:var(--grape);border-color:var(--grape);color:#F4ECFB}
+.ticket-foot{flex:none;padding:14px 16px calc(16px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);background:var(--panel)}
+.sum{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sum span{font-size:14px;color:var(--dim)}
+.sum strong{font-family:var(--disp);font-size:30px;letter-spacing:0}
+.send{width:100%;padding:16px;border-radius:var(--radius);background:var(--drip);
+  color:var(--drip-ink);font-size:16px;font-weight:800}
+.send:disabled{background:var(--panel-2);color:var(--dim);cursor:not-allowed}
+
+/* ═══ CONFIRMACIÓN POST-ENVÍO ═══ */
+.okbox{position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:calc(100% - 40px);max-width:340px;background:var(--panel);
+  border:1px solid var(--line);border-radius:16px;padding:26px 20px;text-align:center}
+.okbox > span{display:block;font-size:11px;letter-spacing:.1em;color:var(--dim)}
+.okbox > strong{display:block;font-family:var(--disp);font-size:64px;line-height:1;
+  color:var(--drip);margin:6px 0 4px}
+.okbox > p{font-size:14.5px;color:var(--dim);margin-bottom:20px}
+.okbox a.send{display:block;text-decoration:none}
+.okbox .luego{display:block;width:100%;margin-top:10px;padding:13px;
+  font-size:14px;font-weight:600;color:var(--dim)}
+.reenviar{display:inline-block;margin-top:8px;padding:9px 14px;border-radius:8px;
+  font-size:13px;font-weight:700;text-decoration:none;color:var(--drip);
+  border:1px solid rgba(233,197,49,.45)}
+
+/* ═══ REGISTRO ═══ */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.stats>div{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:13px 14px}
+.stats span{display:block;font-size:12px;color:var(--dim);margin-bottom:4px}
+.stats strong{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.stats .big{grid-column:1/-1}
+.stats .big strong{font-family:var(--disp);font-size:34px;color:var(--drip);letter-spacing:0}
+@media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}.stats .big{grid-column:span 2}}
+.range{display:flex;gap:6px;margin-top:16px;align-items:center}
+.range button{padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:600;
+  background:var(--panel);border:1px solid var(--line);color:var(--dim)}
+.range button[aria-pressed="true"]{background:var(--pickle);border-color:var(--pickle);color:#141A05}
+.live{margin-left:auto;font-size:12px;color:var(--pickle);display:flex;align-items:center;gap:6px}
+.live::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--pickle)}
+.order{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);margin-top:8px;overflow:hidden}
+.order[data-anulado="1"]{opacity:.5}
+.order[data-anulado="1"] .order-amount{text-decoration:line-through}
+.order-head{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px}
+.order-no{flex:none;min-width:46px;height:38px;padding:0 8px;border-radius:8px;display:grid;place-items:center;
+  font-family:var(--disp);font-size:19px;background:var(--panel-2);color:var(--drip)}
+.order-head .meta{flex:1;min-width:0}
+.order-head .meta b{display:block;font-size:14.5px;font-weight:600}
+.order-head .meta small{font-size:12.5px;color:var(--dim)}
+.order-amount{flex:none;font-size:15.5px;font-weight:700}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:700}
+.tag.efectivo{background:rgba(233,197,49,.18);color:var(--drip)}
+.tag.transferencia{background:rgba(126,82,176,.24);color:#C6A5E8}
+.order-detail{padding:2px 14px 13px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--dim)}
+.order-detail div.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0}
+.anular{margin-top:8px;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:700;
+  color:var(--red);border:1px solid rgba(198,58,36,.45)}
+.tools{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.tools button{padding:11px 16px;border-radius:var(--radius);font-size:14px;font-weight:600;
+  background:var(--panel);border:1px solid var(--line)}
+
+/* ═══ ESCRITORIO ═══ */
+@media(min-width:900px){
+  main{display:grid;grid-template-columns:1fr 372px;gap:26px;align-items:start;padding-bottom:32px}
+  .col-menu{min-width:0}
+  #panelRegistro{grid-column:1/-1}
+  .bar,.scrim{display:none}
+  .ticket{position:sticky;top:130px;bottom:auto;transform:none;border-radius:var(--radius);
+    border:1px solid var(--line);max-height:calc(100dvh - 158px)}
+  .ticket::before{display:none}
+  .ticket-head button{display:none}
+  .ticket-foot{padding-bottom:16px}
+  main[data-tab="registro"] .ticket{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<section id="login">
+  <div class="login-box">
+    <img class="mascota" src="mascota.png" alt="" onerror="this.style.display='none'">
+    <h1>MANTECADOS</h1>
+    <p>Toma de pedidos · uso interno</p>
+    <input id="email" type="email" placeholder="Correo" autocomplete="username" inputmode="email">
+    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button id="btnLogin">Entrar</button>
+    <p class="err" id="loginErr"></p>
+  </div>
+</section>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app" hidden>
+
+<header>
+  <div class="head-row">
+    <img class="avatar" src="mascota.png" alt="" onerror="this.style.visibility='hidden'">
+    <div class="head-txt">
+      <h1>MANTECADOS</h1>
+      <p id="fechaHoy"></p>
+    </div>
+    <div class="ticket-no">
+      <span>PEDIDO</span>
+      <strong class="num" id="proxNumero">—</strong>
+    </div>
+  </div>
+  <nav role="tablist">
+    <button role="tab" aria-selected="true" data-tab="pedido">Tomar pedido</button>
+    <button role="tab" aria-selected="false" data-tab="registro">Registro y caja</button>
+  </nav>
+</header>
+
+<main data-tab="pedido">
+  <section class="col-menu" id="panelPedido">
+    <div class="aviso" id="avisoConexion" hidden>
+      Sin conexión con el servidor. No se pueden tomar pedidos hasta que vuelva internet.
+    </div>
+    <div id="menu"></div>
+  </section>
+
+  <section id="panelRegistro" hidden>
+    <div class="stats">
+      <div class="big"><span>Total facturado</span><strong class="num" id="stTotal">$0</strong></div>
+      <div><span>Pedidos</span><strong class="num" id="stCant">0</strong></div>
+      <div><span>Ticket promedio</span><strong class="num" id="stProm">$0</strong></div>
+      <div><span>Efectivo</span><strong class="num" id="stEfe">$0</strong></div>
+      <div><span>Transferencia</span><strong class="num" id="stTra">$0</strong></div>
+    </div>
+    <div class="range">
+      <button aria-pressed="true" data-range="hoy">Hoy</button>
+      <button aria-pressed="false" data-range="todo">Últimos 300</button>
+      <span class="live">En vivo</span>
+    </div>
+    <div id="listaPedidos"><p class="empty">Cargando pedidos…</p></div>
+    <div class="tools">
+      <button id="btnCSV">Descargar CSV</button>
+      <button id="btnSalir">Cerrar sesión</button>
+    </div>
+  </section>
+</main>
+
+<div class="bar" id="bar" data-empty="1">
+  <div class="bar-info">
+    <span id="barItems">Sin productos</span>
+    <strong class="num" id="barTotal">$0</strong>
+  </div>
+  <button class="bar-cta" id="btnAbrir">Ver pedido</button>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<aside class="ticket" id="ticket" aria-label="Pedido actual">
+  <div class="ticket-head">
+    <h2>PEDIDO EN CURSO</h2>
+    <button id="btnCerrar">Cerrar</button>
+  </div>
+  <div class="ticket-body">
+    <div id="lineas"></div>
+    <div class="field">
+      <label for="cliente">Cliente o mesa (opcional)</label>
+      <input id="cliente" type="text" placeholder="Ej: Juan · Mesa 4 · Retira 21:30" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="nota">Aclaraciones para cocina (opcional)</label>
+      <textarea id="nota" placeholder="Ej: una sin cebolla, papas aparte"></textarea>
+    </div>
+    <div class="field">
+      <label>Forma de pago</label>
+      <div class="pay">
+        <button data-pay="efectivo" aria-pressed="true">Efectivo</button>
+        <button data-pay="transferencia" aria-pressed="false">Transferencia</button>
+      </div>
+    </div>
+    <p class="err" id="envioErr"></p>
+  </div>
+  <div class="ticket-foot">
+    <div class="sum"><span>Total</span><strong class="num" id="totalTicket">$0</strong></div>
+    <button class="send" id="btnEnviar" disabled>Enviar a cocina por WhatsApp</button>
+  </div>
+</aside>
+
+<div class="scrim" id="scrimOk"></div>
+<div class="okbox" id="okbox" hidden role="dialog" aria-label="Pedido registrado">
+  <span>PEDIDO REGISTRADO</span>
+  <strong class="num" id="okNum">#001</strong>
+  <p id="okTotal"></p>
+  <a class="send" id="okWa" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a>
+  <button class="luego" id="okCerrar">Listo, nuevo pedido</button>
+</div>
+
+</div><!-- /app -->
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════════
+   ⚙️  CONFIGURACIÓN
+   ═══════════════════════════════════════════════════════════════ */
+
+// Firebase → Configuración del proyecto → Tus apps → Configuración del SDK.
+// Estas claves son públicas por diseño: lo que protege la base son las reglas
+// de firestore.rules, no ocultar esto.
+const firebaseConfig = {
+  apiKey:            "AIzaSyAjhTn9Os0XXqEvvIkzAfv-xpuLP4XyE2k",
+  authDomain:        "mantecado-3cb41.firebaseapp.com",
+  projectId:         "mantecado-3cb41",
+  storageBucket:     "mantecado-3cb41.firebasestorage.app",
+  messagingSenderId: "394312842105",
+  appId:             "1:394312842105:web:bf2c16c4e2b66c19d84da8"
+};
+
+const CONFIG = {
+  negocio: 'Mantecados',
+  // Cocina: 221 200-8160 → 54 + 9 + 2212008160
+  whatsappCocina: '5492212008160'
+};
+
+/* La carta de Mantecados.
+   El "id" es lo que queda grabado en cada pedido: podés cambiar nombre,
+   descripción y precio cuando quieras, pero el id no. */
+const CARTA = [
+  { categoria: 'Burgers', items: [
+    { id:'b1', nombre:'Cheeseburger',
+      precio:10000, desc:'Salsa mantecados, doble medallón de carne, cheddar x3' },
+    { id:'b2', nombre:'La Maleducada',
+      precio:10000, desc:'Manteca de la casa, doble medallón de carne y cheddar x3' },
+    { id:'b3', nombre:'So Fresh',
+      precio:10000, desc:'Salsa So Fresh, pepinos encurtidos, doble medallón de carne, cheddar x3, cebolla morada y lechuga' },
+    { id:'b4', nombre:'Spicy Cheese Bacon',
+      precio:10000, desc:'Salsa spicy, doble medallón de carne, cheddar x3 y panceta x3' }
+  ]},
+  { categoria: 'Bebidas', items: [
+    { id:'d1', nombre:'Coca-Cola 500cc',    precio:2500, desc:'' },
+    { id:'d2', nombre:'Sprite 500cc',       precio:2500, desc:'' },
+    { id:'d3', nombre:'Agua sin gas 500cc', precio:2000, desc:'' }
+  ]}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   De acá para abajo no hace falta tocar nada
+   ═══════════════════════════════════════════════════════════════ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, onSnapshot, query, where, orderBy, limit,
+         runTransaction, updateDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const fb   = initializeApp(firebaseConfig);
+const auth = getAuth(fb);
+const db   = getFirestore(fb);
+
+/* ---------- Utilidades ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const fmt = new Intl.NumberFormat('es-AR', { maximumFractionDigits:0 });
+const money = n => '$' + fmt.format(Math.round(n));
+const pad  = n => String(n).padStart(3,'0');
+const pad2 = n => String(n).padStart(2,'0');
+const hoyISO  = () => { const d = new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); };
+const horaDe  = iso => { const d = new Date(iso); return pad2(d.getHours())+':'+pad2(d.getMinutes()); };
+const fechaDe = iso => { const d = new Date(iso); return pad2(d.getDate())+'/'+pad2(d.getMonth()+1); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const TODOS = CARTA.flatMap(c => c.items);
+const buscarItem = id => TODOS.find(i => i.id === id);
+
+const estado = {
+  carrito: {}, pago:'efectivo', rango:'hoy',
+  abiertos:new Set(), pedidos:[], enviando:false
+};
+let desuscribir = null;
+
+/* ═══ LOGIN ═══ */
+const mensajeError = code => ({
+  'auth/invalid-email':'Ese correo no es válido.',
+  'auth/user-not-found':'No hay una cuenta con ese correo.',
+  'auth/wrong-password':'La contraseña no coincide.',
+  'auth/invalid-credential':'Correo o contraseña incorrectos.',
+  'auth/too-many-requests':'Demasiados intentos. Esperá un minuto y probá de nuevo.',
+  'auth/network-request-failed':'Sin conexión. Revisá internet y probá de nuevo.'
+}[code] || 'No se pudo entrar. Probá de nuevo.');
+
+async function entrar(){
+  const btn = $('#btnLogin');
+  $('#loginErr').textContent = '';
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    await signInWithEmailAndPassword(auth, $('#email').value.trim(), $('#pass').value);
+  } catch(e) {
+    $('#loginErr').textContent = mensajeError(e.code);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+$('#btnLogin').addEventListener('click', entrar);
+$('#pass').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+$('#email').addEventListener('keydown', e => { if (e.key === 'Enter') $('#pass').focus(); });
+
+onAuthStateChanged(auth, user => {
+  $('#login').hidden = !!user;
+  $('#app').hidden   = !user;
+  if (user) { arrancar(); }
+  else if (desuscribir) { desuscribir(); desuscribir = null; }
+});
+
+/* ═══ CARTA ═══ */
+function pintarCabecera(){
+  const d = new Date();
+  $('#fechaHoy').textContent = d.toLocaleDateString('es-AR',{weekday:'long', day:'numeric', month:'long'});
+}
+function pintarMenu(){
+  $('#menu').innerHTML = CARTA.map(g =>
+    '<h2 class="cat-title">' + esc(g.categoria) + '</h2><div class="items">' +
+    g.items.map(it => {
+      const q = estado.carrito[it.id] || 0;
+      return '<article class="item" data-in="'+(q?1:0)+'">' +
+        '<div class="item-txt"><b>'+esc(it.nombre)+'</b>' +
+          (it.desc ? '<small>'+esc(it.desc)+'</small>' : '') +
+          '<span class="item-price num">'+money(it.precio)+'</span></div>' +
+        (q
+          ? '<div class="step-lg">' +
+              '<button data-menos="'+it.id+'" aria-label="Quitar uno de '+esc(it.nombre)+'">−</button>' +
+              '<span class="num" aria-label="'+q+' en el pedido">'+q+'</span>' +
+              '<button data-mas="'+it.id+'" aria-label="Agregar uno de '+esc(it.nombre)+'">+</button>' +
+            '</div>'
+          : '<button class="item-add" data-add="'+it.id+'" aria-label="Agregar '+esc(it.nombre)+'">+</button>') +
+      '</article>';
+    }).join('') + '</div>').join('');
+}
+
+/* ═══ TICKET ═══ */
+const lineasCarrito = () => Object.keys(estado.carrito).map(id => {
+  const it = buscarItem(id), cant = estado.carrito[id];
+  return { id, nombre:it.nombre, precioUnit:it.precio, cantidad:cant, subtotal:it.precio*cant };
+});
+const totalCarrito  = () => lineasCarrito().reduce((a,l) => a + l.subtotal, 0);
+const cantidadItems = () => Object.values(estado.carrito).reduce((a,n) => a + n, 0);
+
+function pintarTicket(){
+  const lineas = lineasCarrito(), total = totalCarrito(), n = cantidadItems();
+  $('#lineas').innerHTML = lineas.length ? lineas.map(l =>
+    '<div class="line"><span class="line-txt"><b>'+esc(l.nombre)+'</b>' +
+    '<small class="num">'+money(l.precioUnit)+' c/u</small></span>' +
+    '<span class="step"><button data-menos="'+l.id+'" aria-label="Quitar uno">−</button>' +
+    '<span class="num">'+l.cantidad+'</span>' +
+    '<button data-mas="'+l.id+'" aria-label="Agregar uno">+</button></span>' +
+    '<span class="line-total num">'+money(l.subtotal)+'</span></div>'
+  ).join('') : '<p class="empty">Tocá un producto de la carta para empezar el pedido.</p>';
+
+  $('#totalTicket').textContent = money(total);
+  $('#barTotal').textContent = money(total);
+  $('#barItems').textContent = n === 0 ? 'Sin productos' : (n === 1 ? '1 producto' : n + ' productos');
+  $('#bar').dataset.empty = n === 0 ? '1' : '0';
+  $('#btnEnviar').disabled = n === 0 || estado.enviando;
+}
+
+function agregar(id, delta){
+  const nuevo = (estado.carrito[id] || 0) + delta;
+  if (nuevo <= 0) delete estado.carrito[id]; else estado.carrito[id] = nuevo;
+  pintarMenu(); pintarTicket();
+}
+function vaciarCarrito(){
+  estado.carrito = {}; $('#cliente').value = ''; $('#nota').value = '';
+  pintarMenu(); pintarTicket();
+}
+
+/* ═══ ENVÍO ═══ */
+function armarMensaje(p){
+  const L = [];
+  L.push('*PEDIDO #' + pad(p.numero) + '*  ·  ' + CONFIG.negocio);
+  L.push(fechaDe(p.fecha) + ' · ' + horaDe(p.fecha));
+  if (p.cliente) L.push('Cliente: ' + p.cliente);
+  L.push('');
+  p.items.forEach(l => L.push(l.cantidad + '× ' + l.nombre + '   ' + money(l.subtotal)));
+  L.push('');
+  if (p.nota) { L.push('Aclaraciones: ' + p.nota); L.push(''); }
+  L.push('*TOTAL: ' + money(p.total) + '*');
+  L.push('Pago: ' + (p.pago === 'efectivo' ? 'Efectivo' : 'Transferencia'));
+  return L.join('\n');
+}
+
+/* El número y el pedido se escriben en la MISMA transacción: si dos
+   dispositivos envían al mismo tiempo, Firestore reintenta y nunca
+   se repite un número. */
+async function enviarPedido(){
+  if (cantidadItems() === 0 || estado.enviando) return;
+  estado.enviando = true;
+  const btn = $('#btnEnviar');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  $('#envioErr').textContent = '';
+
+  const dia = hoyISO();
+  const base = {
+    fecha: new Date().toISOString(), dia,
+    cliente: $('#cliente').value.trim(),
+    nota: $('#nota').value.trim(),
+    items: lineasCarrito(),
+    total: totalCarrito(),
+    pago: estado.pago,
+    anulado: false,
+    creadoPor: auth.currentUser ? auth.currentUser.email : ''
+  };
+
+  try {
+    const numero = await runTransaction(db, async tx => {
+      const refCont = doc(db, 'contadores', dia);
+      const snap = await tx.get(refCont);
+      const valor = snap.exists() ? (snap.data().valor || 0) + 1 : 1;
+      tx.set(refCont, { valor, dia });
+      tx.set(doc(collection(db, 'pedidos')), { ...base, numero: valor, creadoEn: serverTimestamp() });
+      return valor;
+    });
+
+    const pedido = { ...base, numero };
+    vaciarCarrito();
+    cerrarTicket();
+    mostrarOk(pedido);
+  } catch(e) {
+    console.error(e);
+    const detalle = {
+      'permission-denied':'las reglas de Firestore están rechazando la escritura',
+      'unavailable':'no hay conexión con Firestore',
+      'failed-precondition':'falta la base de datos o un índice',
+      'unauthenticated':'la sesión venció, cerrá sesión y volvé a entrar'
+    }[e.code] || (e.code || e.message);
+    $('#envioErr').textContent =
+      'No se pudo registrar el pedido: ' + detalle + '. ' +
+      'No se guardó nada ni se consumió el número.';
+  } finally {
+    estado.enviando = false;
+    btn.textContent = 'Enviar a cocina por WhatsApp';
+    pintarTicket();
+  }
+}
+
+const urlWa = p => 'https://wa.me/' + CONFIG.whatsappCocina +
+                   '?text=' + encodeURIComponent(armarMensaje(p));
+
+/* El enlace de WhatsApp lo tiene que tocar la persona: si lo abriéramos por
+   código después del await de la transacción, el navegador lo bloquea como
+   pop-up y la comanda nunca sale. */
+function mostrarOk(p){
+  $('#okNum').textContent   = '#' + pad(p.numero);
+  $('#okTotal').textContent = money(p.total) + ' · ' +
+    (p.pago === 'efectivo' ? 'Efectivo' : 'Transferencia');
+  $('#okWa').href = urlWa(p);
+  $('#okbox').hidden = false;
+  $('#scrimOk').classList.add('on');
+}
+function cerrarOk(){
+  $('#okbox').hidden = true;
+  $('#scrimOk').classList.remove('on');
+}
+
+/* ═══ REGISTRO EN VIVO ═══ */
+function escuchar(){
+  if (desuscribir) desuscribir();
+  const col = collection(db, 'pedidos');
+  // "Hoy" filtra por día y ordena en el cliente: así no hace falta índice compuesto.
+  const q = estado.rango === 'hoy'
+    ? query(col, where('dia', '==', hoyISO()))
+    : query(col, orderBy('fecha', 'desc'), limit(300));
+
+  desuscribir = onSnapshot(q, snap => {
+    $('#avisoConexion').hidden = true;
+    estado.pedidos = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+                              .sort((a,b) => b.fecha.localeCompare(a.fecha));
+    const ultimo = estado.pedidos.length ? Math.max(...estado.pedidos.filter(p => p.dia === hoyISO()).map(p => p.numero), 0) : 0;
+    $('#proxNumero').textContent = '#' + pad(ultimo + 1);
+    pintarRegistro();
+  }, err => {
+    console.error(err);
+    $('#avisoConexion').hidden = false;
+    $('#listaPedidos').innerHTML = '<p class="empty">No se pudo leer el registro.<br>Revisá la conexión o las reglas de Firestore.</p>';
+  });
+}
+
+function pintarRegistro(){
+  const lista = estado.pedidos;
+  const validos = lista.filter(p => !p.anulado);
+  const total = validos.reduce((a,p) => a + p.total, 0);
+  const efe = validos.filter(p => p.pago === 'efectivo').reduce((a,p) => a + p.total, 0);
+
+  $('#stTotal').textContent = money(total);
+  $('#stCant').textContent  = validos.length;
+  $('#stProm').textContent  = money(validos.length ? total / validos.length : 0);
+  $('#stEfe').textContent   = money(efe);
+  $('#stTra').textContent   = money(total - efe);
+
+  $('#listaPedidos').innerHTML = lista.length ? lista.map(p => {
+    const abierto = estado.abiertos.has(p.id);
+    return '<article class="order" data-anulado="'+(p.anulado?1:0)+'">' +
+      '<button class="order-head" data-open="'+p.id+'">' +
+        '<span class="order-no num">'+pad(p.numero)+'</span>' +
+        '<span class="meta"><b>'+(p.cliente ? esc(p.cliente) : p.items.length+' productos')+'</b>' +
+        '<small>'+fechaDe(p.fecha)+' · '+horaDe(p.fecha)+' · <span class="tag '+p.pago+'">' +
+        (p.pago === 'efectivo' ? 'Efectivo' : 'Transferencia')+'</span>' +
+        (p.anulado ? ' · anulado' : '')+'</small></span>' +
+        '<span class="order-amount num">'+money(p.total)+'</span></button>' +
+      (abierto ? '<div class="order-detail">' +
+        p.items.map(l => '<div class="row"><span>'+l.cantidad+'× '+esc(l.nombre)+'</span>' +
+          '<span class="num">'+money(l.subtotal)+'</span></div>').join('') +
+        (p.nota ? '<div class="row"><span>Aclaraciones: '+esc(p.nota)+'</span></div>' : '') +
+        '<div><a class="reenviar" href="'+urlWa(p)+'" target="_blank" rel="noopener">Reenviar por WhatsApp</a></div>' +
+        (p.anulado ? '' : '<button class="anular" data-anular="'+p.id+'">Anular pedido</button>') +
+      '</div>' : '') + '</article>';
+  }).join('') : '<p class="empty">Todavía no hay pedidos '+(estado.rango === 'hoy' ? 'hoy' : 'registrados')+'.</p>';
+}
+
+async function anular(id){
+  const p = estado.pedidos.find(x => x.id === id);
+  if (!p) return;
+  if (!confirm('Anular el pedido #'+pad(p.numero)+' por '+money(p.total)+'?\n\n' +
+               'Queda en el listado pero sale de los totales. No se puede deshacer.')) return;
+  try { await updateDoc(doc(db,'pedidos',id), { anulado:true }); }
+  catch(e){ console.error(e); alert('No se pudo anular. Revisá la conexión.'); }
+}
+
+function exportarCSV(){
+  const lista = estado.pedidos;
+  if (!lista.length) { alert('No hay pedidos para exportar en este rango.'); return; }
+  const filas = [['Numero','Fecha','Hora','Cliente','Producto','Cantidad','Precio unitario','Subtotal','Pago','Total pedido','Anulado','Aclaraciones']];
+  lista.slice().reverse().forEach(p => {
+    p.items.forEach((l,i) => filas.push([
+      pad(p.numero), fechaDe(p.fecha)+'/'+new Date(p.fecha).getFullYear(), horaDe(p.fecha),
+      p.cliente, l.nombre, l.cantidad, l.precioUnit, l.subtotal, p.pago,
+      i === 0 ? p.total : '', i === 0 ? (p.anulado ? 'SI' : 'NO') : '', i === 0 ? p.nota : ''
+    ]));
+  });
+  const csv = '\uFEFF' + filas.map(f =>
+    f.map(c => '"'+String(c == null ? '' : c).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+  a.download = 'mantecados-pedidos-'+hoyISO()+'.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ═══ INTERACCIÓN ═══ */
+const abrirTicket  = () => { $('#ticket').classList.add('on'); $('#scrim').classList.add('on'); };
+const cerrarTicket = () => { $('#ticket').classList.remove('on'); $('#scrim').classList.remove('on'); };
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  const add = t.closest('[data-add]');   if (add)   { agregar(add.dataset.add, 1); return; }
+  const mas = t.closest('[data-mas]');   if (mas)   { agregar(mas.dataset.mas, 1); return; }
+  const men = t.closest('[data-menos]'); if (men)   { agregar(men.dataset.menos, -1); return; }
+  const pay = t.closest('[data-pay]');
+  if (pay) {
+    estado.pago = pay.dataset.pay;
+    $$('[data-pay]').forEach(b => b.setAttribute('aria-pressed', b.dataset.pay === estado.pago));
+    return;
+  }
+  const tab = t.closest('[data-tab]');
+  if (tab) {
+    const v = tab.dataset.tab;
+    $$('nav [data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === v));
+    $('main').dataset.tab = v;
+    $('#panelPedido').hidden = v !== 'pedido';
+    $('#panelRegistro').hidden = v !== 'registro';
+    window.scrollTo(0,0);
+    return;
+  }
+  const rng = t.closest('[data-range]');
+  if (rng) {
+    estado.rango = rng.dataset.range;
+    $$('[data-range]').forEach(b => b.setAttribute('aria-pressed', b.dataset.range === estado.rango));
+    escuchar(); return;
+  }
+  const an = t.closest('[data-anular]'); if (an) { anular(an.dataset.anular); return; }
+  const op = t.closest('[data-open]');
+  if (op) {
+    const id = op.dataset.open;
+    estado.abiertos.has(id) ? estado.abiertos.delete(id) : estado.abiertos.add(id);
+    pintarRegistro(); return;
+  }
+});
+
+$('#btnAbrir').addEventListener('click', abrirTicket);
+$('#btnCerrar').addEventListener('click', cerrarTicket);
+$('#scrim').addEventListener('click', cerrarTicket);
+$('#btnEnviar').addEventListener('click', enviarPedido);
+$('#btnCSV').addEventListener('click', exportarCSV);
+$('#btnSalir').addEventListener('click', () => signOut(auth));
+$('#okCerrar').addEventListener('click', cerrarOk);
+$('#scrimOk').addEventListener('click', cerrarOk);
+$('#okWa').addEventListener('click', () => setTimeout(cerrarOk, 400));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarTicket(); cerrarOk(); } });
+
+/* ═══ ARRANQUE ═══ */
+function arrancar(){
+  pintarCabecera();
+  pintarMenu();
+  pintarTicket();
+  escuchar();
+}
+</script>
+</body>
+</html>
